@@ -61,6 +61,19 @@ class ExaminationForm(forms.Form):
         required=True,
         widget=forms.Select()
     )
+    int_rate = forms.DecimalField(
+        label="金利",
+        min_value=0,
+        required=True,
+        widget=forms.NumberInput()
+    )
+    dti = forms.DecimalField(
+        label="収入に対する債務の割合",
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput()
+    )
+
     def predict_loan_status(self):
         model_id = getattr(settings, "AMAZON_ML_MODEL_ID")
         amazon_ml_endpoint = getattr(settings, "AMAZON_ML_ENDPOINT", DEFAULT_AMAZON_ML_ENDPOINT)
@@ -74,6 +87,8 @@ class ExaminationForm(forms.Form):
                 "emp_length": self.cleaned_data['emp_length'],
                 "annual_inc": str(self.cleaned_data['annual_inc']),
                 "home_ownership": self.cleaned_data['home_ownership'],
+		"int_rate": str(self.cleaned_data['int_rate']),
+		"dti": str(self.cleaned_data['dti']),
             }
         }
         response = requests.post(api_gateway_endpoint, data=json.dumps(payload))
